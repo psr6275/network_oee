@@ -150,15 +150,15 @@ def load_cicids_binary_data(dataname, lab_cluster, lab_name, result_dir = '../re
         testx_st = st_scaler_bn.transform(testx)
         return trainx_st, trainy, testx_st, testy
 
-def load_cicids_mult_df(dataname, lab_cluster, lab_name,result_dir = '../results/ids-dataset', include_benign=False):
+def load_cicids_mult_df(dataname, result_dir = '../results/ids-dataset', include_benign=False):
     assert dataname in ["2017","2018"]
     train_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_traindf.parquet"%dataname))
     test_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_testdf.parquet"%dataname))
     
-    # if dataname=="2017":
-    #     lab_dic, lab_name = cluster_labels_2017(include_benign=include_benign)
-    # else:
-    #     lab_dic, lab_name = cluster_labels_2018(include_benign=include_benign)    
+    if dataname=="2017":
+        lab_dic, lab_name = cluster_labels_2017(include_benign=include_benign)
+    else:
+        lab_dic, lab_name = cluster_labels_2018(include_benign=include_benign)    
     
     train_mul= set_multiple_label(train_df,label_col='Label', label_dic = lab_dic, return_col=False)
     test_mul = set_multiple_label(test_df,label_col='Label', label_dic = lab_dic, return_col=False)
@@ -217,17 +217,17 @@ def load_cicids_OEE_mult_data(dataname="2017",result_dir = '../results/ids-datas
             trainx_ooc_st = st_scaler_mul.transform(trainx_ooc)            
             return trainx_m_st, trainy_m, testx_m_st, testy_m, trainx_oee_st, testx_oee_st, train_ooc_st       
     
-def load_cicids_mult_data(dataname="2017",result_dir = '../results/ids-dataset', 
+def load_cicids_mult_data(dataname, lab_dic, lab_name,result_dir = '../results/ids-dataset', 
                             return_scaler = True, ooc_cols = None):   
     
     assert dataname in ["2017","2018"]
     train_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_traindf.parquet"%dataname))
     test_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_testdf.parquet"%dataname))
     
-    if dataname=="2017":
-        lab_dic, lab_name = cluster_labels_2017()
-    else:
-        lab_dic, lab_name = cluster_labels_2018()
+    # if dataname=="2017":
+    #     lab_dic, lab_name = cluster_labels_2017()
+    # else:
+    #     lab_dic, lab_name = cluster_labels_2018()
     
     
     train_mul= set_multiple_label(train_df,label_col='Label', label_dic = lab_dic, return_col=False)

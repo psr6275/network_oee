@@ -6,6 +6,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 
+import logging
+
+from utils import make_dataloader, train_model_with_oe_KL, train_model, test_model
+
 lab_2017 = ['Web Attack \x96 Brute Force', 'Web Attack \x96 XSS', 'Web Attack \x96 Sql Injection',\
             'DoS Hulk', 'DoS GoldenEye', 'DoS slowloris', 'DoS Slowhttptest',\
             'DDoS', 'Bot', 'PortScan', 'FTP-Patator', 'SSH-Patator', 'Heartbleed', 'Infiltration']
@@ -21,13 +25,13 @@ def exp_label_2017(exp_num=1):
     lab_name = ['Web_Attack', 'DoS_attacks', 'DDoS_attacks', 'Bot', 'PortScan', 'Bruteforce']
     
     if exp_num==1:
-        ood_class = 2        
+        ooc_class = 2        
     elif exp_num==2:
-        ood_class = 12
+        ooc_class = 12
     elif exp_num ==3:
-        ood_class = 13
+        ooc_class = 13
     else:
-        ood_class = 10
+        ooc_class = 10
         lab_cluster[5].remove(ood_class)
     
     lab_dic = {}
@@ -43,11 +47,11 @@ def exp_label_2018(exp_num=1):
     lab_name = ['Web_Attack', 'DoS_attacks', 'DDoS_attacks', 'Bot', 'PortScan', 'Bruteforce']
     
     if exp_num==1:
-        ood_class = 2                
+        ooc_class = 2                
     elif exp_num==2:
-        ood_class = 6
+        ooc_class = 6
     else:
-        ood_class = 11
+        ooc_class = 11
 
     lab_dic = {}
     for nlab in lab_cluster:
@@ -107,6 +111,7 @@ def mult_training(cicids_bn, cicids_m, epochs, batch_size, device, result_dir, s
         criterion_mul = nn.CrossEntropyLoss()
 
     if OE:
+        
         Xbtr = cicids_m[-1].transform(cicids_bn[0][cicids_bn[1]==0])        
         outlier_trloader = make_dataloader(Xbtr,np.zeros(len(Xbtr)),batch_size=batch_size, shuffle=True)
         criterion_oe = nn.KLDivLoss()
@@ -115,6 +120,7 @@ def mult_training(cicids_bn, cicids_m, epochs, batch_size, device, result_dir, s
                                  criterion_mul, criterion_oe, 1.0, epochs, save_dir = result_dir, 
                      save_model = save_model,binary=False)
     else:
+        
         clf_mul = train_model(clf_mul, train_mulloader, optim_mul, device, criterion_mul, epochs, save_dir = result_dir, 
                      save_model = save_model, binary=False)
     

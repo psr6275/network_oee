@@ -40,6 +40,13 @@ parser.add_argument(
 #     help="label smoothing during training",
 # )
 parser.add_argument(
+    "--data-dir",
+    default="../data/ids-dataset",
+    type=str,
+    metavar="PATH",
+    help="data directory for the cicids datasets",
+)
+parser.add_argument(
     "--result-dir",
     default="../results/cicidsv3.0",
     type=str,
@@ -80,22 +87,23 @@ def _run_training(args):
 
     if args.dataset =="2017":
         from main_utils import exp_label_2017
-        lab_cluster, lab_dic, lab_name, ooc_cols = exp_label_2017(args.exp)       
+        lab_cluster, lab_dic, lab_name, ooc_cols = exp_label_2017(args.exp)   
+        from main_utils import lab_2017 as lab_name_tot
     else:
         from main_utils import exp_label_2018
         lab_cluster, lab_dic, lab_name, ooc_cols = exp_label_2018(args.exp)
+        from main_utils import lab_2018 as lab_name_tot    
     
-    ooc_list = [None]+list(np.arange(len(lab_name)))
-   
-    cicids_bn = load_cicids_binary_data(args.dataset,lab_cluster, lab_name, result_dir,True, ooc_cols)
-    cicids_m = load_cicids_mult_data(args.dataset,lab_cluster, lab_name,result_dir,True, ooc_cols)
+    cicids_bn = load_cicids_binary_data(args.dataset,lab_cluster, lab_name, result_dir,True, None)
+    cicids_m = load_cicids_mult_data(args.dataset,lab_dic, lab_name,result_dir,True, None)
         
-    bn_save_model, mul_save_model = load_model_path(args.dataset, lab_name, epochs, ooc_cols, LS, OE)
+    bn_save_model, mul_save_model = load_model_path(args.dataset, lab_name, epochs, None, LS, OE)
 
     if os.path.isfile(os.path.join(result_dir, bn_save_model)):
         logging.info("Already exists: "+ bn_save_model)
         # print("Already exists: ", bn_save_model)
     else:
+        from main_utils import binary_training
         logging.info("Train model to: "+ bn_save_model)
         # print("Train model to: ", bn_save_model)
         binary_training(cicids_bn, epochs, batch_size, device, result_dir, bn_save_model)
@@ -104,6 +112,7 @@ def _run_training(args):
         logging.info("Already exists: "+ mul_save_model)
         # print("Already exists: ", mul_save_model)
     else:
+        from main_utils import mult_training
         logging.info("Train model to: "+ mul_save_model)
         # print("Train model to: ", mul_save_model)
         mult_training(cicids_bn, cicids_m, epochs, batch_size, device, result_dir, mul_save_model, LS, OE)
