@@ -103,17 +103,17 @@ def load_oee_scaler_path(dataname, lab_name, oee_cols, ooc_cols=None):
     
     return st_save_path
 
-def load_cicids_binary_data(dataname="2017",result_dir = '../results/ids-dataset', 
+def load_cicids_binary_data(dataname, lab_cluster, lab_name, result_dir = '../results/ids-dataset', 
                             return_scaler = True, ooc_cols = None):   
     
     assert dataname in ["2017","2018"]
     train_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_traindf.parquet"%dataname))
     test_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_testdf.parquet"%dataname))
     
-    if dataname=="2017":
-        lab_cluster, lab_name = cluster_labels_2017(True)
-    else:
-        lab_cluster, lab_name = cluster_labels_2018(True)
+    # if dataname=="2017":
+    #     lab_cluster, lab_name = cluster_labels_2017(True)
+    # else:
+    #     lab_cluster, lab_name = cluster_labels_2018(True)
     
     train_df_bn = set_binary_label(train_df,label_col='Label', default_class='Benign',return_col=False, ooc_cols=ooc_cols, lab_cluster = lab_cluster)
     test_df_bn = set_binary_label(test_df,label_col='Label', default_class='Benign',return_col=False, ooc_cols=ooc_cols, lab_cluster = lab_cluster)
@@ -150,16 +150,15 @@ def load_cicids_binary_data(dataname="2017",result_dir = '../results/ids-dataset
         testx_st = st_scaler_bn.transform(testx)
         return trainx_st, trainy, testx_st, testy
 
-def load_cicids_mult_df(dataname="2017",result_dir = '../results/ids-dataset', include_benign=False):
+def load_cicids_mult_df(dataname, lab_cluster, lab_name,result_dir = '../results/ids-dataset', include_benign=False):
     assert dataname in ["2017","2018"]
     train_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_traindf.parquet"%dataname))
     test_df = pd.read_parquet(os.path.join(result_dir,"cicids%s_testdf.parquet"%dataname))
     
-    if dataname=="2017":
-        lab_dic, lab_name = cluster_labels_2017(include_benign=include_benign)
-    else:
-        lab_dic, lab_name = cluster_labels_2018(include_benign=include_benign)
-    
+    # if dataname=="2017":
+    #     lab_dic, lab_name = cluster_labels_2017(include_benign=include_benign)
+    # else:
+    #     lab_dic, lab_name = cluster_labels_2018(include_benign=include_benign)    
     
     train_mul= set_multiple_label(train_df,label_col='Label', label_dic = lab_dic, return_col=False)
     test_mul = set_multiple_label(test_df,label_col='Label', label_dic = lab_dic, return_col=False)

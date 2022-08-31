@@ -32,7 +32,8 @@ def set_binary_label(df, label_col, default_class='BENIGN', return_col = False,
         return df_y.replace(rep_class).drop(drop_idx)
     else:
         return df.replace({label_col:rep_class}).drop(drop_idx)
-    
+
+
 def cluster_labels_2018(return_cluster = False, include_benign = False):
     if include_benign:
         lab_cluster = {0: ['Benign'],
