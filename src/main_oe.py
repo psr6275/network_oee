@@ -26,12 +26,12 @@ parser.add_argument(
     help="experiment number should be between 1~3",
 )
 
-# parser.add_argument(
-#     "--VAN",
-#     default=False,
-#     action="store_true",
-#     help="Vanilla training without OE",
-# )
+parser.add_argument(
+    "--VAN",
+    default=False,
+    action="store_true",
+    help="Vanilla training without OE and LS",
+)
 
 # parser.add_argument(
 #     "--LS",
@@ -80,8 +80,12 @@ def _run_training(args):
     result_dir = args.result_dir
     batch_size = args.batch_size
     epochs = args.epochs
-    LS = True
-    OE = True
+    if args.VAN:
+        LS = False
+        OE = False
+    else:
+        LS = True
+        OE = True
 
     assert args.dataset in ['2017', '2018']
 
@@ -121,7 +125,7 @@ def _run_training(args):
 if __name__ =="__main__":
 
     args = parser.parse_args()
-    log_file = os.path.join(args.result_dir, "train_cicids%s_epochs_%d_EXP_%s.log"%(args.dataset, args.epochs, args.exp))
+    log_file = os.path.join(args.result_dir, "train_cicids%s_epochs_%d_VAN_%s_EXP_%s.log"%(args.dataset, args.epochs,args.VAN, args.exp))
 
     
     logging.basicConfig(filename=log_file, filemode='w', level=logging.INFO)

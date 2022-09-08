@@ -19,11 +19,15 @@ def _run_experiments():
     default_cmd = "python main_oe.py "
     datasets = ["2017", "2018"]
     thread_list = []
-    for ds in datasets:
-        for exp in range(3):
-            cmd = default_cmd + "--device cuda:%s --exp %s"%(exp+1, exp+1)
+    gid = 2
+    for ds in datasets:        
+        ds_cmd = default_cmd + "--dataset %s "%ds
+        for exp in range(1):
+            cmd = ds_cmd + "--device cuda:%s --exp %s"%(exp+1, exp+1)
             thread_list.append(myThread(cmd))
-    
+        cmd = ds_cmd + "--device cuda:%s --VAN"%(gid)
+        gid +=1
+        thread_list.append(myThread(cmd))
     for thr in thread_list:
         thr.start()
 

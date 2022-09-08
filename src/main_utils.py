@@ -10,28 +10,28 @@ import logging
 
 from utils import make_dataloader, train_model_with_oe_KL, train_model, test_model
 
-lab_2017 = ['Web Attack \x96 Brute Force', 'Web Attack \x96 XSS', 'Web Attack \x96 Sql Injection',\
+lab_2017 = ['Benign','Web Attack \x96 Brute Force', 'Web Attack \x96 XSS', 'Web Attack \x96 Sql Injection',\
             'DoS Hulk', 'DoS GoldenEye', 'DoS slowloris', 'DoS Slowhttptest',\
             'DDoS', 'Bot', 'PortScan', 'FTP-Patator', 'SSH-Patator', 'Heartbleed', 'Infiltration']
 
-lab_2018 = ['Brute Force -Web', 'Brute Force -XSS', 'SQL Injection', 'DoS attacks-Hulk', \
+lab_2018 = ['Benign','Brute Force -Web', 'Brute Force -XSS', 'SQL Injection', 'DoS attacks-Hulk', \
             'DoS attacks-GoldenEye','DoS attacks-Slowloris', 'DoS attacks-SlowHTTPTest', \
             'DDoS attacks-LOIC-HTTP', 'DDOS attack-HOIC', 'Bot','Infilteration',\
             'FTP-BruteForce','SSH-Bruteforce']   
             
 def exp_label_2017(exp_num=1):
     assert exp_num in [1,2,3,4]
-    lab_cluster = {0: [0,1], 1: [3,4,5,6], 2: [7], 3: [8], 4: [9], 5: [10,11]}
+    lab_cluster = {0: [1,2], 1: [4,5,6,7], 2: [8], 3: [9], 4: [10], 5: [11,12]}
     lab_name = ['Web_Attack', 'DoS_attacks', 'DDoS_attacks', 'Bot', 'PortScan', 'Bruteforce']
     
     if exp_num==1:
-        ooc_class = 2        
+        ooc_class = 3        
     elif exp_num==2:
-        ooc_class = 12
-    elif exp_num ==3:
         ooc_class = 13
+    elif exp_num ==3:
+        ooc_class = 14
     else:
-        ooc_class = 10
+        ooc_class = 11
         lab_cluster[5].remove(ood_class)
     
     lab_dic = {}
@@ -43,15 +43,15 @@ def exp_label_2017(exp_num=1):
 
 def exp_label_2018(exp_num=1):
     assert exp_num in [1,2,3]
-    lab_cluster = {0: [0,1], 1: [3,4,5], 2: [7,8], 3: [9], 4: [10], 5: [12]}
+    lab_cluster = {0: [1,2], 1: [4,5,6], 2: [8,9], 3: [10], 4: [11], 5: [13]}
     lab_name = ['Web_Attack', 'DoS_attacks', 'DDoS_attacks', 'Bot', 'PortScan', 'Bruteforce']
     
     if exp_num==1:
-        ooc_class = 2                
+        ooc_class = 3       
     elif exp_num==2:
-        ooc_class = 6
+        ooc_class = 7
     else:
-        ooc_class = 11
+        ooc_class = 12
 
     lab_dic = {}
     for nlab in lab_cluster:
