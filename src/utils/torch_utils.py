@@ -581,3 +581,40 @@ def get_prediction(model, testloader, device):
             preds.append(model(data[0].to(device)).detach().cpu())
         preds = torch.cat(preds,dim=0)
     return preds
+    
+import copy
+
+class HClassifier:
+    def __init__(self, model_bn, model_mul, device, thres_bn=0.5, thres_mul=0.2, ooc_class = 7):
+        self.model_bn = model_bn
+        self.model_mul = model_mul
+        self.thres_bn = thres_bn
+        self.thres_mul = thres_mul
+        self.ooc_class = 7
+        self.device = device
+    def predict(self, bnloader, mulloader, thres_bn=None, thres_mul=None):
+        if thres_bn is None:
+            thres_bn = self.thres_bn        
+        if thres_mul is None:
+            thres_mul = self.thres_mul
+        tot_pred = get_hier_prediction(self.model_bn, self.model_mul, bnloader, mulloader, self.device,\
+                            thres_bn, thres_mul, self.ooc_class)    
+        return tot_pred
+
+def get_hier_prediction(model_bn, model_mul, bnloader, mulloader, device, 
+                        thres_bn = 0.5, thres_mul = 0.2, ooc = 10):
+    preds_bn = get_prediction(model_bn, bnloader, device)
+    # ya_idx = preds_bn.flatten()>=thres_bn
+    yb_idx = preds_bn.flatten()<thres_bn
+
+    pred_mul = get_prediction(model_mul, mulloader, device)
+    pred_max,pred_cls = torch.max(torch.softmax(pred_mul, dim=1), dim=1)
+    idx_conf = pred_max.flatten()>=thres_mul
+    idx_nconf = torch.logical_not(idx_conf)
+    # print(sum(idx_nconf))
+
+    tot_pred = copy.deepcopy(pred_cls.flatten())
+    tot_pred[yb_idx*idx_nconf] = -1.0
+    tot_pred[yb_idx*idx_conf] = 10.0
+
+    return tot_pred
